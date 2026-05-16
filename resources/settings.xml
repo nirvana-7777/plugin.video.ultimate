@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+  <category label="Server">
+    <setting id="server_ip"   type="text"  label="Server IP / Hostname" default="localhost"/>
+    <setting id="server_port" type="text"  label="Server Port"          default="7777"/>
+    <setting id="use_https"   type="bool"  label="Use HTTPS"            default="false"/>
+  </category>
+  <category label="Playback">
+    <setting id="use_inputstream_adaptive" type="bool" label="Use InputStream Adaptive"  default="true"/>
+    <setting id="show_provider_in_title"   type="bool" label="Show provider name in title" default="true"/>
+  </category>
+</settings>
