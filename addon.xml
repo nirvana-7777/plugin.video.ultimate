@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon id="plugin.video.ultimate"
        name="Ultimate"
-       version="1.3.8"
+       version="1.3.9"
        provider-name="Nirvana777">
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
@@ -18,6 +18,7 @@
     <news lang="en_GB">
       v1.1.0: Live Now filter, VOD search, EPG in channel listing, DRM from manifest header, caching, single-provider shortcut, human-readable Now Playing titles.
     </news>
+    <source>https://github.com/nirvana-7777/plugin.video.ultimate</source>
     <assets>
       <icon>icon.png</icon>
       <fanart>fanart.jpg</fanart>

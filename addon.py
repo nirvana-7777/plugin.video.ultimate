@@ -24,6 +24,7 @@ import xbmcplugin
 
 from api import UltimateBackendClient, APIError
 from drm_helper import check_inputstream_adaptive, ensure_widevine
+from m3u_export import export_channels_m3u, CONTEXT_MENU_LABEL as M3U_CONTEXT_LABEL
 from vod_export import export_vod_library, CONTEXT_MENU_LABEL
 from utils import (
     get_setting, get_setting_bool, get_setting_int,
@@ -225,11 +226,20 @@ def show_root():
 
 def _populate_provider_menu(provider):
     """Add the fixed provider sub-menu items to the current directory handle."""
-    add_dir("📺  Channels",    build_url(action="channels",    provider=provider))
+    # Channels folder — with a context menu item to export to M3U
+    channels_url = build_url(action="channels", provider=provider)
+    channels_li  = xbmcgui.ListItem("📺  Channels", offscreen=True)
+    export_url   = build_url(action="export_channels_m3u", provider=provider)
+    channels_li.addContextMenuItems([
+        (M3U_CONTEXT_LABEL, f"RunPlugin({export_url})")
+    ])
+    xbmcplugin.addDirectoryItem(HANDLE, channels_url, channels_li, isFolder=True)
+
     add_dir("📅  Events",      build_url(action="events",      provider=provider))
     add_dir("🔴  Live Now",    build_url(action="live_events", provider=provider))
     add_dir("🎬  VOD",         build_url(action="vod",         provider=provider))
     add_dir("🔍  Search VOD",  build_url(action="vod_search",  provider=provider))
+    add_dir("⭐  Favorites",   build_url(action="favorites",   provider=provider))
     add_dir("⏺  Recordings",  build_url(action="recordings",  provider=provider))
 
 
@@ -559,20 +569,20 @@ def show_vod_search(provider):
 
     for entry in entries:
         entry_type = entry.get("type", "vod")
-        
+
         if entry_type == "vod_category":
             # Handle category folders
-            cat_id = entry.get("id", "")
-            name = entry.get("name", cat_id)
+            cat_id      = entry.get("id", "")
+            name        = entry.get("name", cat_id)
             description = entry.get("description", "")
-            logo = safe_image_url(entry.get("logo_url", ""))
-            art = {"thumb": logo, "icon": logo} if logo else {}
+            logo        = safe_image_url(entry.get("logo_url", ""))
+            art         = {"thumb": logo, "icon": logo} if logo else {}
             child_count = entry.get("child_count")
-            count_str = f"  ({child_count})" if child_count else ""
-            
-            # Build API path - categories use the id directly
+            count_str   = f"  ({child_count})" if child_count else ""
+
+            # Build API path — categories use the id directly
             api_path = cat_id  # e.g., "program_11229"
-            
+
             add_dir(
                 label=f"📁  {name}{count_str}",
                 url=build_url(action="vod_path", provider=provider, path=api_path),
@@ -581,16 +591,18 @@ def show_vod_search(provider):
                 info={"title": name, "plot": description},
             )
         else:
-            # Handle playable VOD items (if search ever returns them directly)
-            item_id = entry.get("Id", "")
-            name = entry.get("Name", item_id)
-            logo = safe_image_url(entry.get("LogoUrl", ""))
+            # Handle playable VOD items
+            item_id     = entry.get("Id", "")
+            name        = entry.get("Name", item_id)
+            logo        = safe_image_url(entry.get("LogoUrl", ""))
             description = entry.get("description", "")
-            art = {"thumb": logo, "icon": logo} if logo else {}
-            
-            # Extract cat_path from the item's id or build from parent
-            cat_path = entry.get("id", "").lstrip("/").rsplit("/", 1)[0] if entry.get("id") else ""
-            
+            art         = {"thumb": logo, "icon": logo} if logo else {}
+
+            cat_path = (
+                entry.get("id", "").lstrip("/").rsplit("/", 1)[0]
+                if entry.get("id") else ""
+            )
+
             add_dir(
                 label=name,
                 url=build_url(action="play_vod", provider=provider,
@@ -601,6 +613,81 @@ def show_vod_search(provider):
                 info={"title": name, "plot": description, "mediatype": "video"},
             )
 
+    end_directory(content="videos")
+
+
+# ---------------------------------------------------------------------------
+# Favorites
+# ---------------------------------------------------------------------------
+
+def show_favorites(provider):
+    """Display favorited items for a provider.
+
+    Favorites may contain channels (FavoriteType == "CHANNEL") or VOD content
+    (PROGRAM, MOVIE, etc.).  Channel favorites are routed to play_channel;
+    everything else goes to play_vod via the content ID.
+    """
+    client = get_client()
+    try:
+        result    = client.get_favorites(provider)
+        favorites = result.get("favorites", [])
+    except APIError as e:
+        notify_error(f"Failed to load favorites: {e}")
+        end_directory(False)
+        return
+
+    if not favorites:
+        notify("No favorites found for this provider.")
+        end_directory()
+        return
+
+    for fav in favorites:
+        fav_type   = fav.get("FavoriteType", "")
+        content_id = fav.get("ContentId", "")
+        title      = fav.get("Title", "")
+        thumbnail  = safe_image_url(fav.get("ThumbnailUrl", ""))
+        series_title = fav.get("SeriesTitle")
+
+        art = {"thumb": thumbnail, "icon": thumbnail} if thumbnail else {}
+
+        # Build display label
+        if series_title:
+            label = f"{title} ({series_title})"
+        else:
+            label = title
+
+        info = {"title": title, "mediatype": "video"}
+        if series_title:
+            info["tvshowtitle"] = series_title
+
+        # Route channel favorites to play_channel; everything else to play_vod.
+        # This prevents channels from being sent to the VOD manifest endpoint
+        # with an empty cat_path, which would always fail.
+        if fav_type == "CHANNEL":
+            play_url = build_url(
+                action="play_channel",
+                provider=provider,
+                channel_id=content_id,
+                channel_name=title,
+            )
+        else:
+            play_url = build_url(
+                action="play_vod",
+                provider=provider,
+                cat_path="",
+                item_id=content_id,
+                item_name=title,
+            )
+
+        li = xbmcgui.ListItem(label, offscreen=True)
+        if art:
+            li.setArt(art)
+        li.setInfo("video", info)
+        li.setProperty("IsPlayable", "true")
+
+        xbmcplugin.addDirectoryItem(HANDLE, play_url, li, isFolder=False)
+
+    xbmcplugin.addSortMethod(HANDLE, xbmcplugin.SORT_METHOD_LABEL)
     end_directory(content="videos")
 
 
@@ -770,7 +857,7 @@ def _build_old_license_key(drm_configs):
     if not server_url:
         return None
 
-    headers   = license_cfg.get("req_headers") or ""
+    headers       = license_cfg.get("req_headers") or ""
     post_data     = _legacy_post_data_from_req_data(license_cfg.get("req_data") or "")
     response_data = _legacy_response_data_from_license(license_cfg)
 
@@ -778,7 +865,7 @@ def _build_old_license_key(drm_configs):
     headers_dict = dict(parse_qsl(headers))
     if 'Content-Type' not in headers_dict and 'content-type' not in headers_dict:
         headers_dict['Content-Type'] = 'application/octet-stream'
-            
+
     # Rebuild headers
     new_headers = urlencode(headers_dict)
 
@@ -1221,6 +1308,8 @@ def router():
         )
     elif action == "vod_search":
         show_vod_search(PARAMS.get("provider", ""))
+    elif action == "favorites":
+        show_favorites(PARAMS.get("provider", ""))
     elif action == "play_channel":
         play_channel(
             provider=PARAMS.get("provider", ""),
@@ -1254,6 +1343,8 @@ def router():
             PARAMS.get("content_id", ""),
             PARAMS.get("folder_name", ""),
         )
+    elif action == "export_channels_m3u":
+        export_channels_m3u(PARAMS.get("provider", ""))
     else:
         xbmc.log(f"[Ultimate] Unknown action: {action}", xbmc.LOGWARNING)
         show_root()

@@ -70,10 +70,11 @@ class APIError(Exception):
 class UltimateBackendClient:
     """HTTP client for the Ultimate Backend REST API."""
 
-    PROVIDER_TTL = 300   # 5 min
-    CHANNEL_TTL  = 300   # 5 min
-    EVENT_TTL    = 60    # 1 min (events change frequently)
-    VOD_TTL      = 600   # 10 min
+    PROVIDER_TTL  = 300   # 5 min
+    CHANNEL_TTL   = 300   # 5 min
+    EVENT_TTL     = 60    # 1 min (events change frequently)
+    VOD_TTL       = 600   # 10 min
+    FAVORITES_TTL = 120   # 2 min (user may add/remove between visits)
 
     def __init__(self, host, port, use_https=False, timeout=10):
         # Basic validation to prevent URL injection via malformed host setting
@@ -457,12 +458,12 @@ class UltimateBackendClient:
     def get_vod_manifest_by_id(self, provider, vod_id, country=None):
         """
         Fetch manifest for a VOD item using its content_id directly.
-        
+
         Args:
             provider: Provider name
             vod_id: The content_id from the VodItem entry
             country: Optional country code
-        
+
         Returns:
             (manifest_data, drm_configs, stream_headers)
         """
@@ -526,6 +527,39 @@ class UltimateBackendClient:
         return self._get(
             f"/api/providers/{provider}/recordings/{recording_id}/drm"
         )
+
+    # ------------------------------------------------------------------
+    # Favorites
+    # ------------------------------------------------------------------
+
+    def get_favorites(self, provider, favorite_type=None):
+        """
+        Fetch favorites for a provider.
+
+        Args:
+            provider:      Provider name (e.g., "rtlplus")
+            favorite_type: Optional filter — e.g. "PROGRAM", "MOVIE", "CHANNEL"
+
+        Returns:
+            dict with keys: "provider", "favorites", "count", "filters"
+            Each favorite contains: FavoriteId, Provider, ContentId,
+            FavoriteType, CreatedAt, Title, ThumbnailUrl, SeriesTitle
+        """
+        cache_key = f"favorites:{provider}:{favorite_type}"
+        cached = _cache_get(cache_key)
+        if cached is not None:
+            return cached
+
+        params = {}
+        if favorite_type:
+            params["favorite_type"] = favorite_type
+
+        data = self._get(
+            f"/api/providers/{provider}/favorites",
+            params=params if params else None,
+        )
+        _cache_set(cache_key, data, self.FAVORITES_TTL)
+        return data
 
     # ------------------------------------------------------------------
     # Health check
