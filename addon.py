@@ -664,7 +664,7 @@ def show_favorites(provider):
             play_url  = build_url(
                 action="vod_path",
                 provider=provider,
-                path=f"program/{content_id}",
+                path=f"program_{content_id}",
             )
             label       = f"📁  {label}"
             is_folder   = True

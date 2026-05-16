@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7bd9089b-9961-43fb-9624-8716c105d037" name="Changes" comment="Improve README">
+    <list default="true" id="7bd9089b-9961-43fb-9624-8716c105d037" name="Changes" comment="Fix favorites">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/addon.py" beforeDir="false" afterPath="$PROJECT_DIR$/addon.py" afterDir="false" />
     </list>
@@ -115,13 +115,22 @@
       <option name="project" value="LOCAL" />
       <updated>1778951658174</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Fix favorites">
+      <option name="closed" value="true" />
+      <created>1778954521474</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1778954521474</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial upload" />
     <MESSAGE value="Add Channels export &amp; Favorites" />
     <MESSAGE value="Improve README" />
-    <option name="LAST_COMMIT_MESSAGE" value="Improve README" />
+    <MESSAGE value="Fix favorites" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix favorites" />
   </component>
 </project>
