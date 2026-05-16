@@ -9,7 +9,7 @@ import sys
 import os
 import json
 import time
-from typing import Dict, List, Optional, Tuple
+from typing import Optional, Tuple
 
 ADDON_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(ADDON_DIR, "resources", "lib"))
@@ -22,12 +22,12 @@ import xbmcaddon
 import xbmcgui
 import xbmcplugin
 
-from api import UltimateBackendClient, APIError
-from drm_helper import check_inputstream_adaptive, ensure_widevine
-from m3u_export import export_channels_m3u, CONTEXT_MENU_LABEL as M3U_CONTEXT_LABEL
-from vod_export import export_vod_library, CONTEXT_MENU_LABEL
-from utils import (
-    get_setting, get_setting_bool, get_setting_int,
+from resources.lib.api import UltimateBackendClient, APIError
+from resources.lib.drm_helper import check_inputstream_adaptive, ensure_widevine
+from resources.lib.m3u_export import export_channels_m3u, CONTEXT_MENU_LABEL as M3U_CONTEXT_LABEL
+from resources.lib.vod_export import export_vod_library, CONTEXT_MENU_LABEL
+from resources.lib.utils import (
+    get_setting, get_setting_bool,
     notify, notify_error,
     safe_image_url, provider_label,
 )
@@ -621,12 +621,6 @@ def show_vod_search(provider):
 # ---------------------------------------------------------------------------
 
 def show_favorites(provider):
-    """Display favorited items for a provider.
-
-    Favorites may contain channels (FavoriteType == "CHANNEL") or VOD content
-    (PROGRAM, MOVIE, etc.).  Channel favorites are routed to play_channel;
-    everything else goes to play_vod via the content ID.
-    """
     client = get_client()
     try:
         result    = client.get_favorites(provider)
@@ -642,50 +636,60 @@ def show_favorites(provider):
         return
 
     for fav in favorites:
-        fav_type   = fav.get("FavoriteType", "")
-        content_id = fav.get("ContentId", "")
-        title      = fav.get("Title", "")
-        thumbnail  = safe_image_url(fav.get("ThumbnailUrl", ""))
+        fav_type     = fav.get("FavoriteType", "")
+        content_id   = fav.get("ContentId", "")
+        title        = fav.get("Title", "")
+        thumbnail    = safe_image_url(fav.get("ThumbnailUrl", ""))
         series_title = fav.get("SeriesTitle")
 
-        art = {"thumb": thumbnail, "icon": thumbnail} if thumbnail else {}
-
-        # Build display label
-        if series_title:
-            label = f"{title} ({series_title})"
-        else:
-            label = title
-
-        info = {"title": title, "mediatype": "video"}
+        art   = {"thumb": thumbnail, "icon": thumbnail} if thumbnail else {}
+        label = f"{title} ({series_title})" if series_title else title
+        info  = {"title": title, "mediatype": "video"}
         if series_title:
             info["tvshowtitle"] = series_title
 
-        # Route channel favorites to play_channel; everything else to play_vod.
-        # This prevents channels from being sent to the VOD manifest endpoint
-        # with an empty cat_path, which would always fail.
         if fav_type == "CHANNEL":
-            play_url = build_url(
+            # Live channel — play directly
+            play_url  = build_url(
                 action="play_channel",
                 provider=provider,
                 channel_id=content_id,
                 channel_name=title,
             )
+            is_folder    = False
+            is_playable  = True
+
+        elif fav_type == "PROGRAM":
+            # Series/show — open as a browsable folder (seasons/episodes inside)
+            play_url  = build_url(
+                action="vod_path",
+                provider=provider,
+                path=f"program/{content_id}",
+            )
+            label       = f"📁  {label}"
+            is_folder   = True
+            is_playable = False
+
         else:
-            play_url = build_url(
+            # CLIP / MOVIE / EVENT — treat as a directly playable VOD leaf
+            play_url  = build_url(
                 action="play_vod",
                 provider=provider,
                 cat_path="",
                 item_id=content_id,
                 item_name=title,
             )
+            is_folder   = False
+            is_playable = True
 
         li = xbmcgui.ListItem(label, offscreen=True)
         if art:
             li.setArt(art)
         li.setInfo("video", info)
-        li.setProperty("IsPlayable", "true")
+        if is_playable:
+            li.setProperty("IsPlayable", "true")
 
-        xbmcplugin.addDirectoryItem(HANDLE, play_url, li, isFolder=False)
+        xbmcplugin.addDirectoryItem(HANDLE, play_url, li, isFolder=is_folder)
 
     xbmcplugin.addSortMethod(HANDLE, xbmcplugin.SORT_METHOD_LABEL)
     end_directory(content="videos")
