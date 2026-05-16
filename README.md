@@ -53,7 +53,6 @@ A Kodi video addon that connects to an **Ultimate Backend** server and exposes a
 | Server Port                | TCP port                                        | `8000`      |
 | Use HTTPS                  | Enable TLS                                      | `false`     |
 | Use InputStream Adaptive   | Required for DRM and MPEG-DASH                  | `true`      |
-| Use server-side decryption | Let the server decrypt — no Widevine CDM needed | `false`     |
 | Preferred DRM              | widevine / playready / auto                     | `auto`      |
 | Show provider in title     | Prefix channel names with `[provider]`          | `true`      |
 
@@ -63,9 +62,6 @@ A Kodi video addon that connects to an **Ultimate Backend** server and exposes a
 
 ### Mode 1 – Client-side DRM (default)
 The addon fetches the raw MPEG-DASH manifest and the DRM license URL from the backend, then passes both to `inputstream.adaptive`. Widevine or PlayReady is used to decrypt in-player. **Requires Widevine CDM** (install via `script.module.inputstreamhelper`).
-
-### Mode 2 – Server-side decryption
-Enable *"Use server-side decryption"* in settings. The backend decrypts the stream before delivery — Kodi receives a clear MPEG-DASH stream that `inputstream.adaptive` can play without any DRM CDM. Use this if you cannot install Widevine (e.g. LibreELEC on ARM).
 
 ---
 
