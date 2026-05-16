@@ -1,20 +1,27 @@
 # plugin.video.ultimate
 
-A Kodi video addon that connects to an **Ultimate Backend** server and exposes all providers, channels, live events and VOD content for playback inside Kodi.
+A Kodi video addon that connects to an **Ultimate Backend** server and exposes all providers, channels, live events, VOD content, favorites, and recordings for playback inside Kodi.
 
 ---
 
 ## Features
 
-| Feature | Details |
-|---|---|
-| Providers | All enabled providers on the server are listed automatically |
-| Channels | Live channel browsing with logo/EPG info |
-| Events | Sports / PPV events with start time display |
-| VOD | Full tree-navigation for VOD categories and items |
-| DRM | Widevine & PlayReady via InputStream Adaptive |
-| Server-side decryption | Optional – no Widevine CDM required |
-| Configurable server | IP/hostname and port set in addon settings |
+| Feature                | Details                                                            |
+|------------------------|--------------------------------------------------------------------|
+| Providers              | All enabled providers on the server are listed automatically       |
+| Channels               | Live channel browsing with logo/EPG info, Catch-up support         |
+| Events                 | Sports / PPV events with start time display and LIVE status        |
+| Live Now               | Filtered view showing only currently live events                   |
+| VOD                    | Full tree-navigation for VOD categories and items                  |
+| VOD Search             | Search across all VOD content                                      |
+| Favorites              | View and play favorited channels and VOD items                     |
+| Recordings             | Browse and play back recorded content with resume support          |
+| DRM                    | Widevine & PlayReady via InputStream Adaptive (Kodi 21/22 support) |
+| Server-side decryption | Optional – no Widevine CDM required                                |
+| M3U Export             | Export channels to M3U playlist for use with other players         |
+| VOD Library Export     | Export VOD categories to Kodi library                              |
+| Configurable server    | IP/hostname and port set in addon settings                         |
+| Auto retry             | Waits for backend to become available on first launch              |
 
 ---
 
@@ -40,15 +47,15 @@ A Kodi video addon that connects to an **Ultimate Backend** server and exposes a
 
 ## Settings
 
-| Setting | Description | Default |
-|---|---|---|
-| Server IP / Hostname | IP or hostname of the Ultimate Backend server | `localhost` |
-| Server Port | TCP port | `8000` |
-| Use HTTPS | Enable TLS | `false` |
-| Use InputStream Adaptive | Required for DRM and MPEG-DASH | `true` |
-| Use server-side decryption | Let the server decrypt — no Widevine CDM needed | `false` |
-| Preferred DRM | widevine / playready / auto | `auto` |
-| Show provider in title | Prefix channel names with `[provider]` | `true` |
+| Setting                    | Description                                     | Default     |
+|----------------------------|-------------------------------------------------|-------------|
+| Server IP / Hostname       | IP or hostname of the Ultimate Backend server   | `localhost` |
+| Server Port                | TCP port                                        | `8000`      |
+| Use HTTPS                  | Enable TLS                                      | `false`     |
+| Use InputStream Adaptive   | Required for DRM and MPEG-DASH                  | `true`      |
+| Use server-side decryption | Let the server decrypt — no Widevine CDM needed | `false`     |
+| Preferred DRM              | widevine / playready / auto                     | `auto`      |
+| Show provider in title     | Prefix channel names with `[provider]`          | `true`      |
 
 ---
 
@@ -62,35 +69,20 @@ Enable *"Use server-side decryption"* in settings. The backend decrypts the stre
 
 ---
 
-## URL scheme
+## DRM Support Details
 
-```
-plugin://plugin.video.ultimate/                           # root (provider list)
-plugin://plugin.video.ultimate/?action=provider_menu&provider=<name>
-plugin://plugin.video.ultimate/?action=channels&provider=<name>
-plugin://plugin.video.ultimate/?action=events&provider=<name>
-plugin://plugin.video.ultimate/?action=vod&provider=<name>
-plugin://plugin.video.ultimate/?action=vod_path&provider=<name>&path=<slug/path>
-plugin://plugin.video.ultimate/?action=play_channel&provider=<name>&channel_id=<id>
-plugin://plugin.video.ultimate/?action=play_event&provider=<name>&event_id=<id>
-plugin://plugin.video.ultimate/?action=play_vod&provider=<name>&vod_path=<slug/path>
-```
+The addon supports multiple Kodi versions with appropriate DRM configuration:
+
+| Kodi Version      | DRM Method                         | Notes                                                                          |
+|-------------------|------------------------------------|--------------------------------------------------------------------------------|
+| Kodi 22+          | `inputstream.adaptive.drm` (JSON)  | Full feature support including wrapper/unwrapper, req_data, server_certificate |
+| Kodi 21 (simple)  | `inputstream.adaptive.drm_legacy`  | Pipe format: `KeySystem\|LicenseURL\|Headers`                                  |
+| Kodi 21 (complex) | `inputstream.adaptive.license_key` | Used when wrapper/unwrapper/req_data are present                               |
+| Kodi 19-20        | `inputstream.adaptive.license_key` | Legacy format with post_data and response_data                                 |
+
+### DRM Header Support
+The addon reads `x-kodi-drm-configs` and `x-kodi-stream-headers` from manifest responses (including redirects), falling back to the `/drm` endpoint when headers are absent.
 
 ---
 
-## API endpoints used
-
-| Endpoint | Purpose |
-|---|---|
-| `GET /api/providers` | List all enabled providers |
-| `GET /api/providers/{p}/channels` | Channel list |
-| `GET /api/providers/{p}/channels/{id}/stream/index.mpd` | Live stream |
-| `GET /api/providers/{p}/channels/{id}/drm` | DRM configs |
-| `GET /api/providers/{p}/events` | Events list |
-| `GET /api/providers/{p}/events/{id}/stream/index.mpd` | Event stream |
-| `GET /api/providers/{p}/events/{id}/drm` | Event DRM |
-| `GET /api/providers/{p}/vod` | VOD root |
-| `GET /api/providers/{p}/vod/{path}` | VOD sub-path |
-| `GET /api/providers/{p}/vod/{path}/stream/index.mpd` | VOD stream |
-| `GET /api/providers/{p}/vod/{path}/drm` | VOD DRM |
-| `…/stream/decrypted/index.mpd` | Server-side decrypted variants |
+## URL scheme
