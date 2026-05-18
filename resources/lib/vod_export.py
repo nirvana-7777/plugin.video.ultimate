@@ -242,17 +242,19 @@ class _ExportJob:
 
         # Write tvshow.nfo and folder poster for series roots
         if is_series:
-            tvshow_nfo = os.path.join(fs_dir, "tvshow.nfo")
-            atomic_write(tvshow_nfo, _nfo_tvshow(
-                category_name, category_desc, category_logo
-            ))
-            self._expected.add(tvshow_nfo)
-            _log(f"tvshow.nfo → {tvshow_nfo}", xbmc.LOGINFO)
+            # Commented out – .nfo and poster.jpg sourced from database instead
+            # tvshow_nfo = os.path.join(fs_dir, "tvshow.nfo")
+            # atomic_write(tvshow_nfo, _nfo_tvshow(
+            #     category_name, category_desc, category_logo
+            # ))
+            # self._expected.add(tvshow_nfo)
+            # _log(f"tvshow.nfo → {tvshow_nfo}", xbmc.LOGINFO)
 
-            if category_logo:
-                poster_path = os.path.join(fs_dir, "poster.jpg")
-                if download_image(category_logo, poster_path):
-                    self._expected.add(poster_path)
+            # if category_logo:
+            #     poster_path = os.path.join(fs_dir, "poster.jpg")
+            #     if download_image(category_logo, poster_path):
+            #         self._expected.add(poster_path)
+            pass
 
         # Write playable VOD items
         for entry in vod_items:
@@ -310,26 +312,29 @@ class _ExportJob:
         self._item_count += 1
 
         # Write .nfo
-        if in_series and season is not None:
-            nfo_content = _nfo_episode(entry)
-        else:
-            nfo_content = _nfo_movie(entry)
-
-        atomic_write(nfo_path, nfo_content)
-        self._expected.add(nfo_path)
+        # Commented out – .nfo sourced from database instead
+        # if in_series and season is not None:
+        #     nfo_content = _nfo_episode(entry)
+        # else:
+        #     nfo_content = _nfo_movie(entry)
+        #
+        # atomic_write(nfo_path, nfo_content)
+        # self._expected.add(nfo_path)
 
         # Poster
-        if logo:
-            poster_path = os.path.join(target_dir, "poster.jpg")
-            if download_image(logo, poster_path):
-                self._expected.add(poster_path)
+        # Commented out – poster.jpg sourced from database instead
+        # if logo:
+        #     poster_path = os.path.join(target_dir, "poster.jpg")
+        #     if download_image(logo, poster_path):
+        #         self._expected.add(poster_path)
 
         # Season poster (write once per season dir)
-        if in_series and season is not None:
-            season_poster = os.path.join(season_dir, "poster.jpg")
-            if logo and not os.path.exists(season_poster):
-                if download_image(logo, season_poster):
-                    self._expected.add(season_poster)
+        # Commented out – poster.jpg sourced from database instead
+        # if in_series and season is not None:
+        #     season_poster = os.path.join(season_dir, "poster.jpg")
+        #     if logo and not os.path.exists(season_poster):
+        #         if download_image(logo, season_poster):
+        #             self._expected.add(season_poster)
 
         _log(f"Written: {os.path.basename(strm_path)} → {target_dir}", xbmc.LOGDEBUG)
 
