@@ -72,7 +72,7 @@ def resolve_export_root():
     from_setting = get_setting("export_root_path") or ""
     if from_setting:
         return xbmcvfs.translatePath(from_setting.rstrip("/\\"))
-    default = "special://profile/addon_data/plugin.video.ultimate"
+    default = "special://home/ultimate"
     return xbmcvfs.translatePath(default)
 
 
