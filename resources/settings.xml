@@ -5,6 +5,9 @@
     <setting id="server_port" type="text"  label="Server Port"          default="7777"/>
     <setting id="use_https"   type="bool"  label="Use HTTPS"            default="false"/>
   </category>
+  <category label="Export">
+    <setting id="export_root_path" type="folder" label="Export root path" default="special://home/ultimate"/>
+  </category>
   <category label="Playback">
     <setting id="use_inputstream_adaptive" type="bool" label="Use InputStream Adaptive"  default="true"/>
     <setting id="show_provider_in_title"   type="bool" label="Show provider name in title" default="true"/>
