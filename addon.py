@@ -1006,6 +1006,30 @@ def _resolve_drm(drm_from_header, drm_endpoint_fn):
         return {}
 
 
+
+def _pick_manifest_url(manifest_data):
+    # type: (dict) -> Optional[str]
+    """Return the appropriate manifest URL based on the use_software_drm setting.
+
+    When software DRM is enabled and the server returned a sw_drm_manifest_url,
+    that URL is used instead of the standard manifest_url.  If the setting is
+    enabled but the server did not supply a software-DRM URL (e.g. the content
+    or provider does not support it), the function falls back to manifest_url
+    and logs a warning so the operator knows the setting had no effect.
+    """
+    if get_setting_bool("use_software_drm"):
+        sw_url = manifest_data.get("sw_drm_manifest_url")
+        if sw_url:
+            xbmc.log("[Ultimate] Software DRM enabled — using sw_drm_manifest_url", xbmc.LOGINFO)
+            return sw_url
+        xbmc.log(
+            "[Ultimate] Software DRM requested but sw_drm_manifest_url not present "
+            "in server response — falling back to standard manifest_url",
+            xbmc.LOGWARNING,
+        )
+    return manifest_data.get("manifest_url")
+
+
 # ---------------------------------------------------------------------------
 # Play Channel
 # ---------------------------------------------------------------------------
@@ -1019,7 +1043,7 @@ def play_channel(provider, channel_id, channel_name=""):
         manifest_data, drm_from_header, stream_headers = client.get_channel_manifest(
             provider, channel_id
         )
-        stream_url = manifest_data.get("manifest_url")
+        stream_url = _pick_manifest_url(manifest_data)
         if not stream_url:
             notify_error("No manifest URL returned by server.")
             xbmcplugin.setResolvedUrl(HANDLE, False, xbmcgui.ListItem(title))
@@ -1055,7 +1079,7 @@ def play_event(provider, event_id, event_name=""):
         manifest_data, drm_from_header, stream_headers = client.get_event_manifest(
             provider, event_id
         )
-        stream_url = manifest_data.get("manifest_url")
+        stream_url = _pick_manifest_url(manifest_data)
         if not stream_url:
             notify_error("No manifest URL returned by server.")
             xbmcplugin.setResolvedUrl(HANDLE, False, xbmcgui.ListItem(title))
@@ -1094,7 +1118,7 @@ def play_vod(provider, cat_path="", item_id="", item_name=""):
         manifest_data, drm_from_header, stream_headers = client.get_vod_manifest_by_id(
             provider, item_id
         )
-        stream_url = manifest_data.get("manifest_url")
+        stream_url = _pick_manifest_url(manifest_data)
         if not stream_url:
             notify_error("No manifest URL returned by server.")
             xbmcplugin.setResolvedUrl(HANDLE, False, xbmcgui.ListItem(title, offscreen=True))
@@ -1262,7 +1286,7 @@ def play_recording(provider, recording_id, recording_name=""):
         manifest_data, drm_from_header, stream_headers = client.get_recording_manifest(
             provider, recording_id
         )
-        stream_url = manifest_data.get("manifest_url")
+        stream_url = _pick_manifest_url(manifest_data)
         if not stream_url:
             notify_error("No manifest URL returned by server.")
             xbmcplugin.setResolvedUrl(HANDLE, False, xbmcgui.ListItem(title))
