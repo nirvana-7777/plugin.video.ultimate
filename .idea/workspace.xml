@@ -4,11 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7bd9089b-9961-43fb-9624-8716c105d037" name="Changes" comment="Introduce Software DRM">
+    <list default="true" id="7bd9089b-9961-43fb-9624-8716c105d037" name="Changes" comment="Catchup export">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/addon.py" beforeDir="false" afterPath="$PROJECT_DIR$/addon.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/addon.xml" beforeDir="false" afterPath="$PROJECT_DIR$/addon.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/lib/api.py" beforeDir="false" afterPath="$PROJECT_DIR$/resources/lib/api.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/lib/m3u_export.py" beforeDir="false" afterPath="$PROJECT_DIR$/resources/lib/m3u_export.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -40,23 +37,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0" />
-      <entry key="S2" value="1.0" />
-      <entry key="S5" value="1.0" />
-      <entry key="S10" value="1.0" />
-      <entry key="S30" value="1.0" />
-      <entry key="S60" value="1.0000000000001459" />
-      <entry key="M2" value="1.0000008541706416" />
-      <entry key="M5" value="1.0098173354691156" />
-      <entry key="M10" value="1.2215546040714254" />
-      <entry key="M15" value="1.6260998843517553" />
-      <entry key="M30" value="2.7693212703456425" />
-      <entry key="H1" value="3.9743243225986356" />
-      <entry key="H2" value="4.856374089589746" />
-      <entry key="H4" value="5.391112648040092" />
-      <entry key="D1" value="5.892949871814196" />
-      <entry key="W1" value="5.984564912511112" />
+      <entry key="MS100" value="1.0115177294239803" />
+      <entry key="MS500" value="1.4300445234897845" />
+      <entry key="S2" value="2.4127291392031993" />
+      <entry key="S5" value="3.213832285496496" />
+      <entry key="S10" value="3.7720404934098113" />
+      <entry key="S30" value="4.454145110523973" />
+      <entry key="S60" value="4.703205144826447" />
+      <entry key="M2" value="4.844949332369746" />
+      <entry key="M5" value="4.945647607548791" />
+      <entry key="M10" value="5.184215007167625" />
+      <entry key="M15" value="5.594783848955677" />
+      <entry key="M30" value="6.744611724389658" />
+      <entry key="H1" value="7.95719536024417" />
+      <entry key="H2" value="8.846060754958312" />
+      <entry key="H4" value="9.385425588411493" />
+      <entry key="D1" value="9.891919040375518" />
+      <entry key="W1" value="9.984415486153503" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -78,23 +75,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.6925547340554623" />
-      <entry key="MS500" value="0.9291606742509133" />
-      <entry key="S2" value="0.9817992705948825" />
-      <entry key="S5" value="0.9926795657513535" />
-      <entry key="S10" value="0.9963330596499111" />
-      <entry key="S30" value="0.9987761894486769" />
-      <entry key="S60" value="0.9993879073958063" />
-      <entry key="M2" value="0.9996947609835418" />
-      <entry key="M5" value="1.0096947101532854" />
-      <entry key="M10" value="1.2214913821851916" />
-      <entry key="M15" value="1.6260553061793956" />
-      <entry key="M30" value="2.769295547397143" />
-      <entry key="H1" value="3.974309651330022" />
-      <entry key="H2" value="4.856366091560268" />
-      <entry key="H4" value="5.391108448235049" />
-      <entry key="D1" value="5.892949140440338" />
-      <entry key="W1" value="5.984564807210053" />
+      <entry key="MS100" value="0.9313130438269697" />
+      <entry key="MS500" value="1.410318257632858" />
+      <entry key="S2" value="2.40435715462943" />
+      <entry key="S5" value="3.2088528908029126" />
+      <entry key="S10" value="3.7685679652336628" />
+      <entry key="S30" value="4.452436876735025" />
+      <entry key="S60" value="4.702237467162867" />
+      <entry key="M2" value="4.844432100554539" />
+      <entry key="M5" value="4.94543179633539" />
+      <entry key="M10" value="5.184103712831961" />
+      <entry key="M15" value="5.594706906983292" />
+      <entry key="M30" value="6.744569658963476" />
+      <entry key="H1" value="7.957172470965574" />
+      <entry key="H2" value="8.846048633933709" />
+      <entry key="H4" value="9.385419323150646" />
+      <entry key="D1" value="9.89191796415887" />
+      <entry key="W1" value="9.984415331573743" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -240,7 +237,15 @@
       <option name="project" value="LOCAL" />
       <updated>1780926635837</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Catchup export">
+      <option name="closed" value="true" />
+      <created>1780929351811</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1780929351811</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -253,6 +258,7 @@
     <MESSAGE value="Fix favorites" />
     <MESSAGE value="Fix export path" />
     <MESSAGE value="Introduce Software DRM" />
-    <option name="LAST_COMMIT_MESSAGE" value="Introduce Software DRM" />
+    <MESSAGE value="Catchup export" />
+    <option name="LAST_COMMIT_MESSAGE" value="Catchup export" />
   </component>
 </project>
