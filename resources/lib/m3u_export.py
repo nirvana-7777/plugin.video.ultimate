@@ -8,6 +8,7 @@ Exports all channels of a provider to an M3U playlist file.
 
 from urllib.parse import urlencode
 
+import math
 import os
 import xbmc
 import xbmcgui
@@ -41,17 +42,34 @@ def _build_extinf_line(channel, provider):
     """
     Build the #EXTINF line for a channel.
 
-    Format: #EXTINF:-1 tvg-logo="url" tvg-name="name" group-title="group",Display Name
+    Format: #EXTINF:-1 tvg-logo="url" tvg-name="name" group-title="group"
+                       [catchup="append" catchup-days="N"
+                        catchup-source="&start_time={utc}&end_time={lutc}"],Display Name
+
+    Catchup attributes are added only when CatchupHours > 0.  Kodi replaces
+    the {utc}/{lutc} placeholders in catchup-source with the requested Unix
+    timestamps when the user opens a time-shifted stream.  The leading "&"
+    makes the values append to the existing plugin:// query string rather than
+    replacing it.
     """
-    ch_id = channel.get("Id", "")
-    name = channel.get("Name", ch_id)
-    logo = safe_image_url(channel.get("LogoUrl", ""))
+    ch_id         = channel.get("Id", "")
+    name          = channel.get("Name", ch_id)
+    logo          = safe_image_url(channel.get("LogoUrl", ""))
+    catchup_hours = channel.get("CatchupHours", 0) or 0
 
     attrs = []
     if logo:
         attrs.append(f'tvg-logo="{logo}"')
     attrs.append(f'tvg-name="{name}"')
     attrs.append(f'group-title="{provider}"')
+
+    if catchup_hours > 0:
+        catchup_days = math.ceil(catchup_hours / 24)
+        attrs.append('catchup="append"')
+        attrs.append(f'catchup-days="{catchup_days}"')
+        # {utc} and {lutc} are Kodi catchup placeholders for start/end Unix timestamps.
+        # The leading "&" appends to the existing query string (append mode).
+        attrs.append('catchup-source="&start_time={utc}&end_time={lutc}"')
 
     return f"#EXTINF:-1 {' '.join(attrs)},{name}"
 

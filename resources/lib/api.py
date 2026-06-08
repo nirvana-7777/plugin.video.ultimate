@@ -315,15 +315,26 @@ class UltimateBackendClient:
         _cache_set(cache_key, result, self.CHANNEL_TTL)
         return result
 
-    def get_channel_manifest(self, provider, channel_id, country=None):
+    def get_channel_manifest(self, provider, channel_id, country=None,
+                             start_time=None, end_time=None):
         """
         GET /api/providers/{provider}/channels/{channel_id}/manifest
         Returns (manifest_data, drm_configs_from_header_or_None,
                  stream_headers_from_header_or_None).
+
+        start_time / end_time are Unix timestamps (int or str) used for
+        catchup/time-shifted playback.  Omit (or pass None) for live.
         """
+        params = {}
+        if country:
+            params["country"] = country
+        if start_time is not None:
+            params["start_time"] = start_time
+        if end_time is not None:
+            params["end_time"] = end_time
         return self._get_manifest_with_drm(
             f"/api/providers/{provider}/channels/{channel_id}/manifest",
-            params={"country": country},
+            params=params or None,
         )
 
     def get_channel_stream_url(self, provider, channel_id, country=None):
@@ -331,9 +342,19 @@ class UltimateBackendClient:
             f"/api/providers/{provider}/channels/{channel_id}/stream/index.mpd"
         )
 
-    def get_channel_drm(self, provider, channel_id, country=None):
-        return self._get(f"/api/providers/{provider}/channels/{channel_id}/drm",
-                         params={"country": country})
+    def get_channel_drm(self, provider, channel_id, country=None,
+                        start_time=None, end_time=None):
+        params = {}
+        if country:
+            params["country"] = country
+        if start_time is not None:
+            params["start_time"] = start_time
+        if end_time is not None:
+            params["end_time"] = end_time
+        return self._get(
+            f"/api/providers/{provider}/channels/{channel_id}/drm",
+            params=params or None,
+        )
 
     def get_channel_epg(self, provider, channel_id, country=None):
         try:

@@ -1039,9 +1039,16 @@ def play_channel(provider, channel_id, channel_name=""):
     use_isa = get_setting_bool("use_inputstream_adaptive")
     title   = channel_name or channel_id
 
+    # Catchup / time-shift: Kodi appends start_time and end_time to the
+    # plugin URL when the user requests a time-shifted stream via the
+    # catchup-source attribute in the M3U.  Pass them straight through
+    # to the server; both will be None for normal live playback.
+    start_time = PARAMS.get("start_time") or None
+    end_time   = PARAMS.get("end_time")   or None
+
     try:
         manifest_data, drm_from_header, stream_headers = client.get_channel_manifest(
-            provider, channel_id
+            provider, channel_id, start_time=start_time, end_time=end_time
         )
         stream_url = _pick_manifest_url(manifest_data)
         if not stream_url:
@@ -1057,7 +1064,9 @@ def play_channel(provider, channel_id, channel_name=""):
     if use_isa:
         drm_configs = _resolve_drm(
             drm_from_header,
-            lambda: client.get_channel_drm(provider, channel_id),
+            lambda: client.get_channel_drm(
+                provider, channel_id, start_time=start_time, end_time=end_time
+            ),
         )
 
     li = xbmcgui.ListItem(title, offscreen=True)

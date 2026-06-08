@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7bd9089b-9961-43fb-9624-8716c105d037" name="Changes" comment="Fix export path" />
+    <list default="true" id="7bd9089b-9961-43fb-9624-8716c105d037" name="Changes" comment="Introduce Software DRM">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/addon.py" beforeDir="false" afterPath="$PROJECT_DIR$/addon.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/addon.xml" beforeDir="false" afterPath="$PROJECT_DIR$/addon.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/lib/api.py" beforeDir="false" afterPath="$PROJECT_DIR$/resources/lib/api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/lib/m3u_export.py" beforeDir="false" afterPath="$PROJECT_DIR$/resources/lib/m3u_export.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -32,6 +38,65 @@
     <commands />
     <urls />
   </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.0" />
+      <entry key="S5" value="1.0" />
+      <entry key="S10" value="1.0" />
+      <entry key="S30" value="1.0" />
+      <entry key="S60" value="1.0000000000001459" />
+      <entry key="M2" value="1.0000008541706416" />
+      <entry key="M5" value="1.0098173354691156" />
+      <entry key="M10" value="1.2215546040714254" />
+      <entry key="M15" value="1.6260998843517553" />
+      <entry key="M30" value="2.7693212703456425" />
+      <entry key="H1" value="3.9743243225986356" />
+      <entry key="H2" value="4.856374089589746" />
+      <entry key="H4" value="5.391112648040092" />
+      <entry key="D1" value="5.892949871814196" />
+      <entry key="W1" value="5.984564912511112" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="0.0" />
+      <entry key="S10" value="0.0" />
+      <entry key="S30" value="0.0" />
+      <entry key="S60" value="0.0" />
+      <entry key="M2" value="0.0" />
+      <entry key="M5" value="0.0" />
+      <entry key="M10" value="0.0" />
+      <entry key="M15" value="0.0" />
+      <entry key="M30" value="0.0" />
+      <entry key="H1" value="0.0" />
+      <entry key="H2" value="0.0" />
+      <entry key="H4" value="0.0" />
+      <entry key="D1" value="0.0" />
+      <entry key="W1" value="0.0" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="0.6925547340554623" />
+      <entry key="MS500" value="0.9291606742509133" />
+      <entry key="S2" value="0.9817992705948825" />
+      <entry key="S5" value="0.9926795657513535" />
+      <entry key="S10" value="0.9963330596499111" />
+      <entry key="S30" value="0.9987761894486769" />
+      <entry key="S60" value="0.9993879073958063" />
+      <entry key="M2" value="0.9996947609835418" />
+      <entry key="M5" value="1.0096947101532854" />
+      <entry key="M10" value="1.2214913821851916" />
+      <entry key="M15" value="1.6260553061793956" />
+      <entry key="M30" value="2.769295547397143" />
+      <entry key="H1" value="3.974309651330022" />
+      <entry key="H2" value="4.856366091560268" />
+      <entry key="H4" value="5.391108448235049" />
+      <entry key="D1" value="5.892949140440338" />
+      <entry key="W1" value="5.984564807210053" />
+    </decayedShown>
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 6
 }</component>
@@ -40,22 +105,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "master",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -167,7 +232,15 @@
       <option name="project" value="LOCAL" />
       <updated>1779175689974</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Introduce Software DRM">
+      <option name="closed" value="true" />
+      <created>1780926635837</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1780926635837</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -179,6 +252,7 @@
     <MESSAGE value="Improve README" />
     <MESSAGE value="Fix favorites" />
     <MESSAGE value="Fix export path" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix export path" />
+    <MESSAGE value="Introduce Software DRM" />
+    <option name="LAST_COMMIT_MESSAGE" value="Introduce Software DRM" />
   </component>
 </project>
