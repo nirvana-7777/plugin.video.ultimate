@@ -1041,16 +1041,51 @@ def play_channel(provider, channel_id, channel_name=""):
 
     # Catchup / time-shift: Kodi appends start_time and end_time to the
     # plugin URL when the user requests a time-shifted stream via the
-    # catchup-source attribute in the M3U.  Pass them straight through
-    # to the server; both will be None for normal live playback.
+    # catchup-source attribute in the M3U.  Both will be None for normal
+    # live playback.
     start_time = PARAMS.get("start_time") or None
     end_time   = PARAMS.get("end_time")   or None
 
     try:
-        manifest_data, drm_from_header, stream_headers = client.get_channel_manifest(
-            provider, channel_id, start_time=start_time, end_time=end_time
-        )
-        stream_url = _pick_manifest_url(manifest_data)
+        # Always fetch the live manifest — catchup params are NOT sent here.
+        # The server returns a catchup_stream_url_template in the body when
+        # the channel supports time-shift; we expand it client-side below.
+        manifest_data, drm_from_header, stream_headers, catchup_template = \
+            client.get_channel_manifest(provider, channel_id)
+
+        if start_time and end_time and catchup_template:
+            # Expand the template with our timestamps.  Guard against a
+            # malformed template (unexpected placeholders, etc.) so we never
+            # let a bare KeyError/IndexError escape to Kodi.
+            try:
+                stream_url = catchup_template.format(
+                    start_time=start_time,
+                    end_time=end_time,
+                )
+                xbmc.log(
+                    f"[Ultimate] Catchup template expanded: {stream_url}",
+                    xbmc.LOGINFO,
+                )
+            except (KeyError, IndexError, ValueError) as fmt_err:
+                xbmc.log(
+                    f"[Ultimate] catchup_stream_url_template expand failed "
+                    f"({fmt_err!r}); template={catchup_template!r} — "
+                    f"falling back to live stream",
+                    xbmc.LOGWARNING,
+                )
+                stream_url = _pick_manifest_url(manifest_data)
+        elif start_time and end_time:
+            # Catchup requested but no template from server — log and fall
+            # through to live so playback at least starts.
+            xbmc.log(
+                "[Ultimate] Catchup requested but server returned no "
+                "catchup_stream_url_template — playing live stream instead",
+                xbmc.LOGWARNING,
+            )
+            stream_url = _pick_manifest_url(manifest_data)
+        else:
+            stream_url = _pick_manifest_url(manifest_data)
+
         if not stream_url:
             notify_error("No manifest URL returned by server.")
             xbmcplugin.setResolvedUrl(HANDLE, False, xbmcgui.ListItem(title))
@@ -1060,6 +1095,11 @@ def play_channel(provider, channel_id, channel_name=""):
         xbmcplugin.setResolvedUrl(HANDLE, False, xbmcgui.ListItem(title))
         return
 
+    # Fetch DRM configs via the unified helper.  For catchup streams the DRM
+    # endpoint also accepts start_time/end_time; the lambda forwards them so
+    # the /drm fallback path works correctly for time-shifted content.
+    # drm_from_header (captured from the live manifest response) is still
+    # valid for catchup — the licence server URL does not change per segment.
     drm_configs = {}
     if use_isa:
         drm_configs = _resolve_drm(
