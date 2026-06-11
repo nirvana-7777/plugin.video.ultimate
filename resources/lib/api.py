@@ -317,8 +317,13 @@ class UltimateBackendClient:
 
     def get_channel_manifest(self, provider, channel_id, country=None):
         """
-        GET /api/providers/{provider}/channels/{channel_id}/manifest
-        Returns (manifest_data, drm_configs, stream_headers, catchup_template)
+            GET /api/providers/{provider}/channels/{channel_id}/manifest
+
+            Returns:
+                manifest_data: dict with manifest_url, sw_drm_manifest_url, catchup_stream_url_template
+                drm_configs: dict or None (from x-kodi-drm-configs header)
+                stream_headers: dict or None (from x-kodi-stream-headers header)
+                catchup_template: str or None (for time-shifted playback)
         """
         params = {}
         if country:
