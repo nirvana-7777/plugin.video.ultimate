@@ -311,9 +311,9 @@ class UltimateBackendClient:
             return cached
         data = self._get(f"/api/providers/{provider}/channels",
                          params={"country": country})
-        result = data.get("channels", [])
+        result = data.get("channels", [])  # This ensures we always get a list
         _cache_set(cache_key, result, self.CHANNEL_TTL)
-        return result
+        return result if result is not None else []  # Extra safety
 
     def get_channel_manifest(self, provider, channel_id, country=None):
         """

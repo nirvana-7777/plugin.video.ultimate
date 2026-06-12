@@ -95,6 +95,10 @@ def _write_m3u_content(filepath, channels, provider, progress):
 
     Returns the number of channel entries written.
     """
+    if not channels:
+        _log("No channels to write", xbmc.LOGWARNING)
+        return 0
+
     lines = ["#EXTM3U"]
     total = len(channels)
 
@@ -109,7 +113,7 @@ def _write_m3u_content(filepath, channels, provider, progress):
         lines.append(stream_url)
 
         # Update progress every 50 channels
-        if idx % 50 == 0:
+        if idx % 50 == 0 and total > 0:  # Add check for total > 0
             pct = int((idx / total) * 100)
             progress.update(pct, message=f"Writing channel {idx + 1}/{total}…")
 
@@ -132,6 +136,11 @@ def _run_export(provider):
         # Get client and fetch channels
         client = get_client_from_settings()
         channels = client.get_channels(provider)
+
+        # Safety check - ensure channels is a list
+        if channels is None:
+            channels = []
+            _log(f"get_channels returned None for provider '{provider}'", xbmc.LOGWARNING)
 
         if not channels:
             notify(f"No channels found for provider '{provider}'.")
