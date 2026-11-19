@@ -22,7 +22,7 @@ import xbmcaddon
 import xbmcgui
 import xbmcplugin
 
-from resources.lib.api import UltimateBackendClient, APIError
+from resources.lib.api import UltimateBackendClient, APIError, APIAuthPendingError
 from resources.lib.drm_helper import check_inputstream_adaptive, ensure_widevine
 from resources.lib.m3u_export import export_channels_m3u, CONTEXT_MENU_LABEL as M3U_CONTEXT_LABEL
 from resources.lib.vod_export import export_vod_library, CONTEXT_MENU_LABEL
@@ -1369,6 +1369,8 @@ def router():
         show_root()
     elif action == "provider_menu":
         show_provider_menu(PARAMS.get("provider", ""))
+    elif action == "login":
+        perform_provider_login(PARAMS.get("provider", ""))
     elif action == "channels":
         show_channels(PARAMS.get("provider", ""))
     elif action == "events":
@@ -1429,3 +1431,27 @@ def router():
 
 if __name__ == "__main__":
     router()
+def show_login_dialog(provider, login_code="", qr_target_url="", remaining_seconds=300):
+    import xbmcgui
+    dialog = xbmcgui.Dialog()
+    title = f"Telekom MagentaTV 2.0 - Login"
+    code_str = f" [ {login_code} ] " if login_code else ""
+    url_str = qr_target_url or "https://telekom.de/tv-login"
+    msg = (
+        f"Bitte schließe die Telekom-Anmeldung ab:\n\n"
+        f"1. Öffne auf deinem Smartphone oder PC:\n   {url_str}\n\n"
+        f"2. Gib folgenden Anmeldecode ein:\n  {code_str}\n\n"
+        f"3. Bestätige die Anmeldung bei der Telekom."
+    )
+    dialog.ok(title, msg)
+
+def perform_provider_login(provider):
+    try:
+        channels = client.get_channels(provider)
+        import xbmcgui
+        xbmcgui.Dialog().ok("MagentaTV 2.0", "Anmeldung bereits erfolgreich! Senderliste geladen.")
+    except APIAuthPendingError as e:
+        show_login_dialog(provider, e.login_code, e.qr_target_url, e.remaining_seconds)
+    except Exception as e:
+        import xbmcgui
+        xbmcgui.Dialog().ok("MagentaTV 2.0", f"Anmeldehinweis: {e}")
